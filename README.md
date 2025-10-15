@@ -114,7 +114,7 @@ print(res_str(ex))
 
 ### Задание 1
 ```python
-def min_max(nums):
+def min_max(nums: list[float | int]) -> tuple[float | int, float | int]:
     if isinstance(nums, list) and len(nums) != 0 and all(isinstance(element, (int, float)) for element in nums):
         return min(nums), max(nums)
     return 'ValueError'
@@ -127,7 +127,7 @@ print(min_max([]))
 print(min_max([1.5, 2, 2.0, -3.1]))
 
 
-def unique_sorted(nums):
+def unique_sorted(nums: list[float | int]) -> list[float | int]:
     if isinstance(nums, list) and len(nums) != 0 and all(isinstance(element, (int, float)) for element in nums):
         return sorted(set(nums))
     return nums
@@ -139,7 +139,7 @@ print(unique_sorted([-1, -1, 0, 2, 2]))
 print(unique_sorted([1.0, 1, 2.5, 2.5, 0]))
 
 
-def flatten(mat):
+def flatten(mat: list[list | tuple]) -> list:
     if isinstance(mat, (list, tuple)) and len(mat) != 0 and all(isinstance(element, (list, tuple)) for element in mat):
         result = []
         for element in mat:
@@ -157,7 +157,7 @@ print(flatten([[1, 2], "ab"]))
 
 ### Задание B
 ```python
-def transpose(mat):
+def transpose(mat: list[list[float | int]]) -> list[list]:
     if len(mat) == 0:
         return []
     if isinstance(mat, list) and all(isinstance(row, list) for row in mat) and all(isinstance(element, (int, float)) for row in mat for element in row):
@@ -175,7 +175,7 @@ print(transpose([]))
 print(transpose([[1, 2], [3]]))
 
 
-def row_sums(mat):
+def row_sums(mat: list[list[float | int]]) -> list[float]:
     if len(mat) == 0:
         return []
     if isinstance(mat, list) and all(isinstance(row, list) for row in mat) and all(isinstance(element, (int, float)) for row in mat for element in row):
@@ -191,7 +191,7 @@ print(row_sums([[0, 0], [0, 0]]))
 print(row_sums([[1, 2], [3]]))
 
 
-def col_sums(mat):
+def col_sums(mat: list[list[float | int]]) -> list[float]:
     if len(mat) == 0:
         return []
     if isinstance(mat, list) and all(isinstance(row, list) for row in mat) and all(isinstance(element, (int, float)) for row in mat for element in row):
@@ -216,7 +216,7 @@ print(col_sums([[1, 2], [3]]))
 
 ### Задание C
 ```python
-def format_record(rec):
+def format_record(rec: tuple[str, str, float]) -> str:
     if len(rec[0]) == 0 or len(rec[1]) == 0:
         return 'ValueError'
     if type(rec[2]) is not float:
