@@ -117,12 +117,17 @@ print(res_str(ex))
 
 ### Задание 1
 ```python
+<<<<<<< HEAD
 def min_max(nums):
+=======
+def min_max(nums: list[float | int]) -> tuple[float | int, float | int]:
+>>>>>>> 6b14d9450f439602e12cb926e62f141b344fa2c6
     if isinstance(nums, list) and len(nums) != 0 and all(isinstance(element, (int, float)) for element in nums):
         return min(nums), max(nums)
     return 'ValueError'
 
 print('min_max')
+<<<<<<< HEAD
 print(min_max([3, -1, 5, 6, 0]))
 print(min_max([52]))
 print(min_max([-5, -2, -9]))
@@ -130,17 +135,37 @@ print(min_max([]))
 print(min_max([2.5, -2, 2.1, 3.1]))
 
 def unique_sorted(nums):
+=======
+print(min_max([3, -1, 5, 5, 0]))
+print(min_max([42]))
+print(min_max([-5, -2, -9]))
+print(min_max([]))
+print(min_max([1.5, 2, 2.0, -3.1]))
+
+
+def unique_sorted(nums: list[float | int]) -> list[float | int]:
+>>>>>>> 6b14d9450f439602e12cb926e62f141b344fa2c6
     if isinstance(nums, list) and len(nums) != 0 and all(isinstance(element, (int, float)) for element in nums):
         return sorted(set(nums))
     return nums
 
 print('unique_sorted')
+<<<<<<< HEAD
 print(unique_sorted([3, 2, 2, 1, 3]))
 print(unique_sorted([]))
 print(unique_sorted([-1, -1, 0, 2, 2]))
 print(unique_sorted([1.0, 1, 2.6, 2.4, 0]))
 
 def flatten(mat):
+=======
+print(unique_sorted([3, 1, 2, 1, 3]))
+print(unique_sorted([]))
+print(unique_sorted([-1, -1, 0, 2, 2]))
+print(unique_sorted([1.0, 1, 2.5, 2.5, 0]))
+
+
+def flatten(mat: list[list | tuple]) -> list:
+>>>>>>> 6b14d9450f439602e12cb926e62f141b344fa2c6
     if isinstance(mat, (list, tuple)) and len(mat) != 0 and all(isinstance(element, (list, tuple)) for element in mat):
         result = []
         for element in mat:
@@ -149,16 +174,27 @@ def flatten(mat):
     return 'TypeError'
 
 print('flatten')
+<<<<<<< HEAD
 print(flatten([[2, 3], [4, 5]]))
 print(flatten(([2, 3], (4, 5, 6))))
 print(flatten([[1], [], [2, 3]]))
 print(flatten([[1, 2], "gg"]))
+=======
+print(flatten([[1, 2], [3, 4]]))
+print(flatten(([1, 2], (3, 4, 5))))
+print(flatten([[1], [], [2, 3]]))
+print(flatten([[1, 2], "ab"]))
+>>>>>>> 6b14d9450f439602e12cb926e62f141b344fa2c6
 ```
 ![Картинка 1](./images/lab02/arrays.png)
 
 ### Задание B
 ```python
+<<<<<<< HEAD
 def transpose(mat):
+=======
+def transpose(mat: list[list[float | int]]) -> list[list]:
+>>>>>>> 6b14d9450f439602e12cb926e62f141b344fa2c6
     if len(mat) == 0:
         return []
     if isinstance(mat, list) and all(isinstance(row, list) for row in mat) and all(isinstance(element, (int, float)) for row in mat for element in row):
@@ -176,7 +212,11 @@ print(transpose([]))
 print(transpose([[1, 2], [3]]))
 
 
+<<<<<<< HEAD
 def row_sums(mat):
+=======
+def row_sums(mat: list[list[float | int]]) -> list[float]:
+>>>>>>> 6b14d9450f439602e12cb926e62f141b344fa2c6
     if len(mat) == 0:
         return []
     if isinstance(mat, list) and all(isinstance(row, list) for row in mat) and all(isinstance(element, (int, float)) for row in mat for element in row):
@@ -192,7 +232,11 @@ print(row_sums([[0, 0], [0, 0]]))
 print(row_sums([[1, 2], [3]]))
 
 
+<<<<<<< HEAD
 def col_sums(mat):
+=======
+def col_sums(mat: list[list[float | int]]) -> list[float]:
+>>>>>>> 6b14d9450f439602e12cb926e62f141b344fa2c6
     if len(mat) == 0:
         return []
     if isinstance(mat, list) and all(isinstance(row, list) for row in mat) and all(isinstance(element, (int, float)) for row in mat for element in row):
@@ -217,7 +261,11 @@ print(col_sums([[1, 2], [3]]))
 
 ### Задание C
 ```python
+<<<<<<< HEAD
 def format_record(rec):
+=======
+def format_record(rec: tuple[str, str, float]) -> str:
+>>>>>>> 6b14d9450f439602e12cb926e62f141b344fa2c6
     if len(rec[0]) == 0 or len(rec[1]) == 0:
         return 'ValueError'
     if type(rec[2]) is not float:
