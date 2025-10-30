@@ -11,7 +11,7 @@ def format_record(rec):
                 full_name += initials[0].upper() + '.'
             return f'{full_name}, гр. {rec[1]}, GPA {"{:.2f}".format(rec[2])}'
 
-print(format_record(("Иванов Иван Иванович", "BIVT-25", 4.6)))
-print(format_record(("Петров Пётр", "IKBO-12", 5.0)))
-print(format_record(("Петров Пётр Петрович", "IKBO-12", 5.0)))
-print(format_record(("  сидорова  анна   сергеевна ", "ABB-01", 3.999)))
+print(format_record(("Анисимова Олеся Сергеевна", "BIVT-25", 4.6)))
+print(format_record(("Сидорова Анна", "IKBO-12", 5.0)))
+print(format_record(("Константинов Константин Константинович", "BIVT-12", 5.0)))
+print(format_record(("  анисимова  олеся   сергеевна ", "IT-01", 4.999)))

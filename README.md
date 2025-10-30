@@ -59,6 +59,9 @@ print(f'{len(FIO2)}')
 
 ### Задание 6
 ```python
+def count_participants():  
+    n = int(input(""))
+      
     offline = 0  
     online = 0  
       
@@ -109,3 +112,127 @@ def res_str(s):
 print(res_str(ex))
 ```
 ![Картинка 7](./images/lab01/ex07.png)
+
+## Лабораторная работа 2
+
+### Задание 1
+```python
+def min_max(nums):
+    if isinstance(nums, list) and len(nums) != 0 and all(isinstance(element, (int, float)) for element in nums):
+        return min(nums), max(nums)
+    return 'ValueError'
+
+print('min_max')
+print(min_max([3, -1, 5, 6, 0]))
+print(min_max([52]))
+print(min_max([-5, -2, -9]))
+print(min_max([]))
+print(min_max([2.5, -2, 2.1, 3.1]))
+
+def unique_sorted(nums):
+    if isinstance(nums, list) and len(nums) != 0 and all(isinstance(element, (int, float)) for element in nums):
+        return sorted(set(nums))
+    return nums
+
+print('unique_sorted')
+print(unique_sorted([3, 2, 2, 1, 3]))
+print(unique_sorted([]))
+print(unique_sorted([-1, -1, 0, 2, 2]))
+print(unique_sorted([1.0, 1, 2.6, 2.4, 0]))
+
+def flatten(mat):
+    if isinstance(mat, (list, tuple)) and len(mat) != 0 and all(isinstance(element, (list, tuple)) for element in mat):
+        result = []
+        for element in mat:
+            result.extend(element)
+        return result
+    return 'TypeError'
+
+print('flatten')
+print(flatten([[2, 3], [4, 5]]))
+print(flatten(([2, 3], (4, 5, 6))))
+print(flatten([[1], [], [2, 3]]))
+print(flatten([[1, 2], "gg"]))
+```
+![Картинка 1](./images/lab02/arrays.png)
+
+### Задание B
+```python
+def transpose(mat):
+    if len(mat) == 0:
+        return []
+    if isinstance(mat, list) and all(isinstance(row, list) for row in mat) and all(isinstance(element, (int, float)) for row in mat for element in row):
+        row_len = [len(row) for row in mat]
+        if len(set(row_len)) != 1:
+            return 'ValueError'
+
+        return [[mat[j][i] for j in range(len(mat))] for i in range(len(mat[0]))]
+
+print('transpose')
+print(transpose([[1, 2, 3]]))
+print(transpose([[1], [2], [3]]))
+print(transpose([[1, 2], [3, 4]]))
+print(transpose([]))
+print(transpose([[1, 2], [3]]))
+
+
+def row_sums(mat):
+    if len(mat) == 0:
+        return []
+    if isinstance(mat, list) and all(isinstance(row, list) for row in mat) and all(isinstance(element, (int, float)) for row in mat for element in row):
+        row_len = [len(row) for row in mat]
+        if len(set(row_len)) != 1:
+            return 'ValueError'
+        return [sum(element) for element in mat]
+
+print('row_sums')
+print(row_sums([[1, 2, 3], [4, 5, 6]]))
+print(row_sums([[-1, 1], [10, -10]]))
+print(row_sums([[0, 0], [0, 0]]))
+print(row_sums([[1, 2], [3]]))
+
+
+def col_sums(mat):
+    if len(mat) == 0:
+        return []
+    if isinstance(mat, list) and all(isinstance(row, list) for row in mat) and all(isinstance(element, (int, float)) for row in mat for element in row):
+        row_len = [len(row) for row in mat]
+        if len(set(row_len)) != 1:
+            return 'ValueError'
+    result = []
+    for col_index in range(len(mat[0])):
+        sum_col = 0
+        for row in mat:
+            sum_col += row[col_index]
+        result.append(sum_col)
+    return result
+
+print('col_sums')
+print(col_sums([[1, 2, 3], [4, 5, 6]]))
+print(col_sums([[-1, 1], [10, -10]]))
+print(col_sums([[0, 0], [0, 0]]))
+print(col_sums([[1, 2], [3]]))
+```
+![Картинка 2](./images/lab02/matrix.png)
+
+### Задание C
+```python
+def format_record(rec):
+    if len(rec[0]) == 0 or len(rec[1]) == 0:
+        return 'ValueError'
+    if type(rec[2]) is not float:
+        return 'TypeError'
+    if isinstance(rec, tuple):
+        if isinstance(rec[0], str) and isinstance(rec[1], str) and isinstance(rec[2], float):
+            name = rec[0].split()
+            full_name = name[0][0].upper() + name[0][1:] + ' '
+            for initials in name[1:]:
+                full_name += initials[0].upper() + '.'
+            return f'{full_name}, гр. {rec[1]}, GPA {"{:.2f}".format(rec[2])}'
+
+print(format_record(("Иванов Иван Иванович", "BIVT-25", 4.6)))
+print(format_record(("Петров Пётр", "IKBO-12", 5.0)))
+print(format_record(("Петров Пётр Петрович", "IKBO-12", 5.0)))
+print(format_record(("  сидорова  анна   сергеевна ", "ABB-01", 3.999)))
+```
+![Картинка 3](./images/lab02/tuples.png)
