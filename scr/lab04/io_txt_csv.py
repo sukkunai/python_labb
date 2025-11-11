@@ -3,18 +3,23 @@ from pathlib import Path
 
 def read_text(path: str | Path, encoding: str = "utf-8") -> str:
     """
-    Открыть файл на чтение в указанной кодировке и вернуть содержимое как одну строку 
-    + обработка ошибок + возможность выбора кодировки
+    Открыть файл на чтение в указанной кодировке и вернуть содержимое как одну строку,
+    обработка ошибок,
+    возможность выбора кодировки(по умолчанию utf-8,но если нужна другая можно указать, например: encoding="cp1251")
     """
-
-    with open(path, 'r', encoding=encoding) as file:
+    try:
+        with open(path, 'r', encoding=encoding) as file:
             return ' '.join(file.read().replace("\n", ' ').split())
-    
+    except UnicodeDecodeError as e:
+        raise ValueError(f"Неправильная кодировка") from e
+    except FileNotFoundError as e:
+        raise FileNotFoundError(f"Файл не найден") from e
 
 def write_csv(rows: list[tuple | list], path: str | Path, header: tuple[str, ...] | None = None) -> None:
     """
-    Создать/перезаписать CSV с разделителем "," + Если передан header, записать его первой строкой 
-    + Проверить, что каждая строка в rows имеет одинаковую длину (иначе ValueError)
+    Создать/перезаписать CSV с разделителем "," ,
+    Если передан header, записать его первой строкой,
+    Проверить, что каждая строка в rows имеет одинаковую длину (иначе ValueError)
     """
      
     p = Path(path)
@@ -34,11 +39,5 @@ def write_csv(rows: list[tuple | list], path: str | Path, header: tuple[str, ...
             w.writerow(r)
 
 
-txt = read_text("C:/Users/79032/Desktop/PYTHON_LAB/python_labb/data/lab04/input.txt")  # должен вернуть строку
-f_csv = write_csv([("word","count"),("test",3)], "C:/Users/79032/Desktop/PYTHON_LAB/python_labb/data/lab04/check.csv")  # создаст CSV
-
-print(txt)
-print("="*20)
-print(f_csv)
 
 
