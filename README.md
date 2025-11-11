@@ -403,6 +403,7 @@ print(console(text_content))
 ```
 ![Картинка 2](./images/lab04/text_report.png)
 
+<<<<<<< HEAD
 ## Лабораторная работа 5
 ### Задание A
 ```python
@@ -486,3 +487,5 @@ text_to_csv(frequencies_from_text(text_content))
 print(console(text_content))
 ```
 ![Картинка 3](./images/lab05/text_report.png)
+=======
+>>>>>>> da8670476c7482ab1f575b7697b34bcd8ec89b8c
