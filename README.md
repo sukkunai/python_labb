@@ -482,7 +482,7 @@ def csv_to_xlsx(csv_path: str, xlsx_path: str) -> None:
     ws = wb.active
     ws.title = "Sheet1"
 
-    with open(csv_path, encoding="utf-8") as f:
+    with open(csv_path, encoding="utf-8", newline='') as f:
         for row in csv.reader(f):
             ws.append(row)
         for column in ws.columns:
