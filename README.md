@@ -413,7 +413,7 @@ def json_to_csv(json_path: str, csv_path: str) -> None:
     """
     Преобразует JSON-файл в CSV.
     Поддерживает список словарей [{...}, {...}], заполняет отсутствующие поля пустыми строками.
-    Кодировка UTF-8. Порядок колонок — как в первом объекте или алфавитный (указать в README).
+    Кодировка UTF-8. Порядок колонок — как в первом объекте или алфавитный.
     """
     if not (json_path.endswith('.json')) or not (csv_path.endswith('.csv')):
         raise TypeError('Неверный тип файла')
@@ -423,7 +423,7 @@ def json_to_csv(json_path: str, csv_path: str) -> None:
         if not isinstance(file, list):
             raise ValueError("JSON должен содержать список объектов")
         if len(file) == 0:
-            raise ValueError("Пустой JSON или неподдерживаемая структура")
+            raise ValueError("Файл пуст или неподдерживаемая структура")
         if not isinstance(file[0], dict):
             raise ValueError("Элементы списка должны быть словарями")
 
@@ -446,12 +446,12 @@ def csv_to_json(csv_path: str, json_path: str) -> None:
     json.dump(..., ensure_ascii=False, indent=2)
     """
     if not (csv_path.endswith('.csv')) or not (json_path.endswith('.json')):
-        raise TypeError('Неверный тип файла')
+        raise TypeError('Неправильный формат файла')
     try:
         with open(csv_path, 'r', encoding='utf-8') as cf:
             file = list(csv.DictReader(cf))
         if len(file) == 0:
-            raise ValueError('CSV файл пуст')
+            raise ValueError('Файл пуст')
 
         with open(json_path, 'w', encoding='utf-8') as jf:
             json.dump(file, jf, ensure_ascii=False, indent=2)
@@ -482,7 +482,7 @@ def csv_to_xlsx(csv_path: str, xlsx_path: str) -> None:
     ws = wb.active
     ws.title = "Sheet1"
 
-    with open(csv_path, encoding="utf-8", newline='') as f:
+    with open(csv_path, encoding="utf-8") as f:
         for row in csv.reader(f):
             ws.append(row)
         for column in ws.columns:
