@@ -403,89 +403,99 @@ print(console(text_content))
 ```
 ![Картинка 2](./images/lab04/text_report.png)
 
-<<<<<<< HEAD
 ## Лабораторная работа 5
 ### Задание A
 ```python
+import json
 import csv
-from pathlib import Path
 
-def read_text(path: str | Path, encoding: str = "utf-8") -> str:
+def json_to_csv(json_path: str, csv_path: str) -> None:
+    """
+    Преобразует JSON-файл в CSV.
+    Поддерживает список словарей [{...}, {...}], заполняет отсутствующие поля пустыми строками.
+    Кодировка UTF-8. Порядок колонок — как в первом объекте или алфавитный.
+    """
+    if not (json_path.endswith('.json')) or not (csv_path.endswith('.csv')):
+        raise TypeError('Неверный тип файла')
+    try:
+        with open(json_path, 'r', encoding='utf-8') as jf:
+            file = json.load(jf) # возвращает список словарей
+        if not isinstance(file, list):
+            raise ValueError("JSON должен содержать список объектов")
+        if len(file) == 0:
+            raise ValueError("Файл пуст или неподдерживаемая структура")
+        if not isinstance(file[0], dict):
+            raise ValueError("Элементы списка должны быть словарями")
 
-    with open(path, 'r', encoding=encoding) as file:
-            return ' '.join(file.read().replace("\n", ' ').split())
-    
-def write_csv(rows: list[tuple | list], path: str | Path, header: tuple[str, ...] | None = None) -> None:
-    
-    p = Path(path)
-    rows = list(rows)
-    
-    if rows:
-        expected_length = len(rows[0])
-        for r in rows:
-            if len(r) != expected_length:
-                raise ValueError("Все строки должны иметь одинаковую длину")
-            
-    with p.open("w", newline="", encoding="utf-8") as f:
-        w = csv.writer(f,  delimiter=',')
-        if header is not None:
-            w.writerow(header)
-        for r in rows:
-            w.writerow(r)
+        with open(csv_path, 'w', encoding='utf-8', newline='') as cf:
+            writer = csv.DictWriter(cf, fieldnames=list(file[0].keys()))
+            writer.writeheader()
+            writer.writerows(file)
 
-#мини тест
-import sys
-sys.path.append('C:/Users/79032/Desktop/PYTHON_LAB/python_labb')
-from io_txt_csv import read_text, write_csv
+    except FileNotFoundError:
+        raise FileNotFoundError("Файл не найден")
 
-txt = read_text("C:/Users/79032/Desktop/PYTHON_LAB/python_labb/data/lab04/input.txt")  # должен вернуть строку
-f_csv = write_csv([("word","count"),("test",3)], "C:/Users/79032/Desktop/PYTHON_LAB/python_labb/data/lab04/check.csv")  # создаст CSV
+json_to_csv('C:/Users/79032/Desktop/PYTHON_LAB/python_labb/data/lab05/samples/people.json',
+            'C:/Users/79032/Desktop/PYTHON_LAB/python_labb/data/lab05/out/people_from_json.csv')
 
-print(txt)
-print("="*20)
-print(f_csv)
+
+def csv_to_json(csv_path: str, json_path: str) -> None:
+    """
+    Преобразует CSV в JSON (список словарей).
+    Заголовок обязателен, значения сохраняются как строки.
+    json.dump(..., ensure_ascii=False, indent=2)
+    """
+    if not (csv_path.endswith('.csv')) or not (json_path.endswith('.json')):
+        raise TypeError('Неправильный формат файла')
+    try:
+        with open(csv_path, 'r', encoding='utf-8') as cf:
+            file = list(csv.DictReader(cf))
+        if len(file) == 0:
+            raise ValueError('Файл пуст')
+
+        with open(json_path, 'w', encoding='utf-8') as jf:
+            json.dump(file, jf, ensure_ascii=False, indent=2)
+    except FileNotFoundError:
+        raise FileNotFoundError("Файл не найден")
+
+csv_to_json('C:/Users/79032/Desktop/PYTHON_LAB/python_labb/data/lab05/samples/people.csv',
+            'C:/Users/79032/Desktop/PYTHON_LAB/python_labb/data/lab05/out/people_from_csv.json')
 ```
 ![Картинка 1](./images/lab05/people_from_json.png)
-![Картинка 2](./images/lab05/mini_test.png)
+![Картинка 2](./images/lab05/people_from_csv.png)
 
 
 ### Задание B
 ```python
-import sys
-from pathlib import Path
+from openpyxl import Workbook
+import csv
 
-current_dir = Path(__file__).parent
-project_root = current_dir.parent.parent 
-sys.path.append(str(project_root / 'scr' / 'lib'))
-from moduls import normalize, tokenize, count_freq, top_n
-from io_txt_csv import read_text, write_csv
+def csv_to_xlsx(csv_path: str, xlsx_path: str) -> None:
+    """
+    Конвертирует CSV в XLSX.
+    Использовать openpyxl ИЛИ xlsxwriter.
+    Первая строка CSV — заголовок.
+    Лист называется "Sheet1".
+    Колонки — автоширина по длине текста (не менее 8 символов).
+    """
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Sheet1"
 
+    with open(csv_path, encoding="utf-8") as f:
+        for row in csv.reader(f):
+            ws.append(row)
+        for column in ws.columns:
+            mx = 0
+            column_letter = column[0].column_letter
+            for cell in column:
+                mx = max(mx, len(cell.value))
+            new_width = max(mx + 2, 8)
+            ws.column_dimensions[column_letter].width = new_width
 
-def console(text):
-    tokens = tokenize(normalize(text))
-    top = top_n(count_freq(tokens))
-    output = f"Всего слов: {len(tokens)}"
-    output += f"\nУникальных слов: {len(set(tokens))}"
-    output += "\nТоп-5:"
-    for word, count in top:
-        output += f"\n{word}:{count}"
-    return output
+        wb.save(xlsx_path)
 
-
-def from_file_to_text(path, encoding='utf-8'):
-    return read_text(path, encoding=encoding)
-
-def frequencies_from_text(text: str) -> dict[str, int]: 
-    token = top_n(count_freq(tokenize(normalize(text))))
-    return token
-
-def text_to_csv(rows, path=str(project_root / 'data' / 'lab04' / 'report.csv'), header=("word", "count")):
-    return write_csv(rows, path=path, header=header)
-
-text_content = from_file_to_text(str(project_root / 'data' / 'lab04' / 'input.txt'))
-text_to_csv(frequencies_from_text(text_content))
-print(console(text_content))
+csv_to_xlsx('C:/Users/79032/Desktop/PYTHON_LAB/python_labb/data/lab05/samples/cities.csv',
+            'C:/Users/79032/Desktop/PYTHON_LAB/python_labb/data/lab05/out/cities.xlsx')
 ```
-![Картинка 3](./images/lab05/text_report.png)
-=======
->>>>>>> da8670476c7482ab1f575b7697b34bcd8ec89b8c
+![Картинка 3](./images/lab05/cities.png)
