@@ -2,9 +2,14 @@ import argparse
 from pathlib import Path
 from scr.lib.moduls import tokenize, count_freq, top_n
 
+
 def main():
-    parser = argparse.ArgumentParser(description="CLI‑утилиты лабораторной №6")#Создаем парсер с описанием для справки
-    subparsers = parser.add_subparsers(dest="command")#Создаем группу подпарсеров для разных команд и выбранная команда сохранится в args.command
+    parser = argparse.ArgumentParser(
+        description="CLI‑утилиты лабораторной №6"
+    )  # Создаем парсер с описанием для справки
+    subparsers = parser.add_subparsers(
+        dest="command"
+    )  # Создаем группу подпарсеров для разных команд и выбранная команда сохранится в args.command
 
     cat_parser = subparsers.add_parser("cat", help="Вывести содержимое файла")
     cat_parser.add_argument("--input", required=True)
@@ -14,11 +19,11 @@ def main():
     stats_parser.add_argument("--input", required=True)
     stats_parser.add_argument("--top", type=int, default=5)
 
-    args = parser.parse_args()#Парсим аргументы командной строки
+    args = parser.parse_args()  # Парсим аргументы командной строки
 
-    file = Path(args.input)#Создаем объект Path для работы с путём файла
+    file = Path(args.input)  # Создаем объект Path для работы с путём файла
 
-    if not file.exists():#Проверяем существование файла, иначе выбрасывает исключение
+    if not file.exists():  # Проверяем существование файла, иначе выбрасывает исключение
         raise FileNotFoundError("Файл не найден")
 
     if args.command == "cat":
@@ -50,6 +55,7 @@ def main():
         print(f"Топ-{args.top}:")
         for word, count in top:
             print(f"{word}: {count}")
-            
+
+
 if __name__ == "__main__":
     main()

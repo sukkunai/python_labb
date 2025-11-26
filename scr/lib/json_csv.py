@@ -1,13 +1,18 @@
-import json
+﻿import json
 import csv
+from pathlib import Path
 
 
 def json_to_csv(json_path: str, csv_path: str) -> None:
     """
     Преобразует JSON-файл в CSV.
     Поддерживает список словарей [{...}, {...}], заполняет отсутствующие поля пустыми строками.
-    Кодировка UTF-8. Порядок колонок — как в первом объекте или алфавитный.
+    Кодировка UTF-8. Порядок колонок  как в первом объекте или алфавитный.
     """
+    # Преобразуем Path в строку если нужно
+    json_path = str(json_path)
+    csv_path = str(csv_path)
+
     if not (json_path.endswith(".json")) or not (csv_path.endswith(".csv")):
         raise TypeError("Неверный тип файла")
     try:
@@ -16,7 +21,7 @@ def json_to_csv(json_path: str, csv_path: str) -> None:
         if not isinstance(file, list):
             raise ValueError("JSON должен содержать список объектов")
         if len(file) == 0:
-            raise ValueError("Пустой JSON или неподдерживаемая структура")
+            raise ValueError("Файл пуст или неподдерживаемая структура")
         if not isinstance(file[0], dict):
             raise ValueError("Элементы списка должны быть словарями")
 
@@ -29,33 +34,25 @@ def json_to_csv(json_path: str, csv_path: str) -> None:
         raise FileNotFoundError("Файл не найден")
 
 
-json_to_csv(
-    "C:/Users/79032/Desktop/PYTHON_LAB/python_labb/data/lab05/samples/people.json",
-    "C:/Users/79032/Desktop/PYTHON_LAB/python_labb/data/lab05/out/people_from_json.csv",
-)
-
-
 def csv_to_json(csv_path: str, json_path: str) -> None:
     """
     Преобразует CSV в JSON (список словарей).
     Заголовок обязателен, значения сохраняются как строки.
     json.dump(..., ensure_ascii=False, indent=2)
     """
+    # Преобразуем Path в строку если нужно
+    csv_path = str(csv_path)
+    json_path = str(json_path)
+
     if not (csv_path.endswith(".csv")) or not (json_path.endswith(".json")):
         raise TypeError("Неправильный формат файла")
     try:
         with open(csv_path, "r", encoding="utf-8") as cf:
             file = list(csv.DictReader(cf))
         if len(file) == 0:
-            raise ValueError("CSV файл пуст")
+            raise ValueError("Файл пуст")
 
         with open(json_path, "w", encoding="utf-8") as jf:
             json.dump(file, jf, ensure_ascii=False, indent=2)
     except FileNotFoundError:
         raise FileNotFoundError("Файл не найден")
-
-
-csv_to_json(
-    "C:/Users/79032/Desktop/PYTHON_LAB/python_labb/data/lab05/samples/people.csv",
-    "C:/Users/79032/Desktop/PYTHON_LAB/python_labb/data/lab05/out/people_from_csv.json",
-)

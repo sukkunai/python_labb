@@ -1,5 +1,6 @@
 import sys
-sys.path.append('C:/Users/79032/Desktop/PYTHON_LAB/python_labb')
+
+sys.path.append("C:/Users/79032/Desktop/PYTHON_LAB/python_labb")
 from scr.lib.moduls import normalize, tokenize, count_freq, top_n
 
 a = sys.stdin.read()
