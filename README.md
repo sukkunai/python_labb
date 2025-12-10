@@ -1028,6 +1028,6 @@ if __name__ == '__main__':
 # Удаление студента
 ![Картинка 7](./images/lab09/remove.png)
 # Обновление информации студента
-![Картинка 8](./images/lab09/remove.png)
+![Картинка 8](./images/lab09/update.png)
 
 
