@@ -1,4 +1,4 @@
-﻿import pytest
+import pytest
 from pathlib import Path
 import csv
 import json
@@ -6,9 +6,8 @@ from scr.lib.json_csv import json_to_csv, csv_to_json
 
 """позитивчик"""
 
-
 def test_csv_to_json_basic(tmp_path: Path):
-    # Проверка корректной конвертации CSV  JSON
+    #Проверка корректной конвертации CSV → JSON
     scr = tmp_path / "people.csv"
     dst = tmp_path / "people.json"
 
@@ -30,9 +29,8 @@ def test_csv_to_json_basic(tmp_path: Path):
     assert data[1]["name"] == "Bob"
     assert set(data[0].keys()) == {"name", "age"}
 
-
 def test_json_to_csv_basic(tmp_path: Path):
-    # Проверка корректной конвертации JSON  CSV
+    #Проверка корректной конвертации JSON → CSV
     scr = tmp_path / "people.json"
     dst = tmp_path / "people.csv"
 
@@ -52,10 +50,7 @@ def test_json_to_csv_basic(tmp_path: Path):
     assert reader[0]["name"] == "Alice"
     assert set(reader[0].keys()) == {"name", "age"}
 
-
 """туда-сюда"""
-
-
 def test_json_to_csv_roundtrip(tmp_path: Path):
     scr = tmp_path / "people.json"
     mid = tmp_path / "people.csv"
@@ -103,10 +98,7 @@ def test_csv_to_json_roundtrip(tmp_path: Path):
     assert len(result) == 2
     assert set(result[0].keys()) == {"city", "tsss"}
 
-
 """негативчик"""
-
-
 def test_json_to_csv_empty_file(tmp_path: Path):
     # пустой JSON файл - ValueError
     scr = tmp_path / "bad.json"
@@ -126,7 +118,6 @@ def test_csv_to_json_empty_file(tmp_path: Path):
     with pytest.raises(ValueError):
         csv_to_json(str(scr), str(dst))
 
-
 def test_json_to_csv_missing_file(tmp_path: Path):
     # несуществующий JSON файл - FileNotFoundError
     scr = tmp_path / "no_file.json"
@@ -134,7 +125,6 @@ def test_json_to_csv_missing_file(tmp_path: Path):
 
     with pytest.raises(FileNotFoundError):
         json_to_csv(scr, dst)
-
 
 def test_csv_to_json_missing_file(tmp_path: Path):
     # несуществующий CSV файл - FileNotFoundError
