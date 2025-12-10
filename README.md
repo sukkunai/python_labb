@@ -605,3 +605,429 @@ if __name__ == "__main__":
 ```
 ![Картинка 3](./images/lab06/cli_convert.png)
 ![Картинка 4](./images/lab06/help2.png)
+
+## Лабораторная работа 7
+### Задание A
+```python
+
+import pytest
+from scr.lib.moduls import normalize, tokenize, count_freq, top_n
+
+
+@pytest.mark.parametrize(
+    "scr,expected",
+    [
+        ("ПрИвЕт\nМИр\t", "привет мир"),
+        ("ёжик, Ёлка", "ежик, елка"),
+        ("Hello\r\nWorld", "hello world"),
+        ("  двойные   пробелы  ", "двойные пробелы"),
+    ],
+)
+def test_normalize(scr, expected):
+    assert normalize(scr) == expected
+
+
+@pytest.mark.parametrize(
+    "scr,expected",
+    [
+        ("привет мир", ["привет", "мир"]),
+        ("hello,world!!!", ["hello", "world"]),
+        ("по-настоящему круто", ["по-настоящему", "круто"]),
+        ("2025 год", ["2025", "год"]),
+        ("emoji 😀 не слово", ["emoji", "не", "слово"]),
+    ],
+)
+def test_tokenize(scr, expected):
+    assert tokenize(scr) == expected
+
+
+@pytest.mark.parametrize(
+    "tokens,expected", 
+    [
+    (["a", "b", "a", "a", "c", "b"], {"a": 3, "b": 2, "c": 1}),
+    ([], {}),
+    ],
+)
+def test_count_freq(tokens, expected):
+    assert count_freq(tokens) == expected
+
+
+@pytest.mark.parametrize(
+    "freq,n,expected", 
+    [
+    ({"a": 3, "b": 1, "c": 2}, 2, [("a", 3), ("c", 2)]),
+    ({"beta": 1, "alpha": 1, "gamma": 1}, 3, [("alpha", 1), ("beta", 1), ("gamma", 1)]),
+    ({"one": 2, "two": 1}, 10, [("one", 2), ("two", 1)]),
+    ({"a": 1, "b": 2}, 0, []),
+    ],
+)
+def test_top_n(freq, n, expected):
+    assert top_n(freq, n) == expected
+
+```
+### Задание B
+```python
+
+import pytest
+from pathlib import Path
+import csv
+import json
+from scr.lib.json_csv import json_to_csv, csv_to_json
+
+"""позитивчик"""
+
+def test_csv_to_json_basic(tmp_path: Path):
+    #Проверка корректной конвертации CSV → JSON
+    scr = tmp_path / "people.csv"
+    dst = tmp_path / "people.json"
+
+    rows = [
+        ["name", "age"],
+        ["Alice", "22"],
+        ["Bob", "25"],
+    ]
+
+    with scr.open("w", encoding="utf-8") as f:
+        writer = csv.writer(f)
+        writer.writerows(rows)
+
+    csv_to_json(scr, dst)
+
+    data = json.loads(dst.read_text(encoding="utf-8"))
+
+    assert len(data) == 2
+    assert data[1]["name"] == "Bob"
+    assert set(data[0].keys()) == {"name", "age"}
+
+def test_json_to_csv_basic(tmp_path: Path):
+    #Проверка корректной конвертации JSON → CSV
+    scr = tmp_path / "people.json"
+    dst = tmp_path / "people.csv"
+
+    data = [
+        {"name": "Alice", "age": 22},
+        {"name": "Bob", "age": 25},
+    ]
+
+    scr.write_text(json.dumps(data, ensure_ascii=False), encoding="utf-8")
+
+    json_to_csv(scr, dst)
+
+    with dst.open(encoding="utf-8") as f:
+        reader = list(csv.DictReader(f))
+
+    assert len(reader) == 2
+    assert reader[0]["name"] == "Alice"
+    assert set(reader[0].keys()) == {"name", "age"}
+
+"""туда-сюда"""
+def test_json_to_csv_roundtrip(tmp_path: Path):
+    scr = tmp_path / "people.json"
+    mid = tmp_path / "people.csv"
+    dst = tmp_path / "people2.json"
+
+    data = [
+        {"name": "Alice", "age": 22},
+        {"name": "Bob", "age": 25},
+    ]
+
+    scr.write_text(json.dumps(data, ensure_ascii=False), encoding="utf-8")
+
+    json_to_csv(scr, mid)
+    csv_to_json(mid, dst)
+
+    data2 = json.loads(dst.read_text(encoding="utf-8"))
+
+    assert data2 == [
+        {"name": "Alice", "age": "22"},
+        {"name": "Bob", "age": "25"},
+    ]
+
+
+def test_csv_to_json_roundtrip(tmp_path: Path):
+    scr = tmp_path / "data.csv"
+    mid = tmp_path / "data.json"
+    dst = tmp_path / "data2.csv"
+
+    rows = [
+        ["city", "tsss"],
+        ["Moscow", "677554335"],
+        ["Paris", "5234521"],
+    ]
+
+    with scr.open("w", encoding="utf-8") as f:
+        writer = csv.writer(f)
+        writer.writerows(rows)
+
+    csv_to_json(scr, mid)
+    json_to_csv(mid, dst)
+
+    with dst.open(encoding="utf-8") as f:
+        result = list(csv.DictReader(f))
+
+    assert len(result) == 2
+    assert set(result[0].keys()) == {"city", "tsss"}
+
+"""негативчик"""
+def test_json_to_csv_empty_file(tmp_path: Path):
+    # пустой JSON файл - ValueError
+    scr = tmp_path / "bad.json"
+    dst = tmp_path / "out.csv"
+    scr.write_text("", encoding="utf-8")
+
+    with pytest.raises(ValueError):
+        json_to_csv(str(scr), str(dst))
+
+
+def test_csv_to_json_empty_file(tmp_path: Path):
+    # пустой CSV файл - ValueError
+    scr = tmp_path / "bad.csv"
+    dst = tmp_path / "out.json"
+    scr.write_text("", encoding="utf-8")
+
+    with pytest.raises(ValueError):
+        csv_to_json(str(scr), str(dst))
+
+def test_json_to_csv_missing_file(tmp_path: Path):
+    # несуществующий JSON файл - FileNotFoundError
+    scr = tmp_path / "no_file.json"
+    dst = tmp_path / "out.csv"
+
+    with pytest.raises(FileNotFoundError):
+        json_to_csv(scr, dst)
+
+def test_csv_to_json_missing_file(tmp_path: Path):
+    # несуществующий CSV файл - FileNotFoundError
+    scr = tmp_path / "no_file.csv"
+    dst = tmp_path / "out.json"
+
+    with pytest.raises(FileNotFoundError):
+        csv_to_json(scr, dst)
+
+```
+![Картинка 1](./images/lab07/tests.png)
+![Картинка 2](./images/lab07/black.png)
+
+## Лабораторная работа 8
+### Задание A
+```python
+
+from datetime import datetime, date
+from dataclasses import dataclass
+
+
+@dataclass
+class Student:
+    fio: str
+    birthdate: str
+    group: str
+    gpa: float
+
+    def __post_init__(self):
+        try:
+            datetime.strptime(self.birthdate, "%Y-%m-%d")
+        except ValueError:
+            raise ValueError("Неверный формат даты")
+        
+        if date.today().year < int(self.birthdate.split('-')[0]):
+            raise ValueError('Год рождения больше нынешнего')
+        
+        if not (0 <= self.gpa <= 5):
+            raise ValueError("gpa должен быть [0,5]")
+        
+    def age(self) -> int:
+        '''возвращает количество полных лет'''
+        today = date.today()
+        birth_year, birth_month, birth_day = map(int, self.birthdate.split('-'))
+        age = today.year - birth_year
+        
+        if (today.month, today.day) < (birth_month, birth_day):
+            age -= 1
+        return age
+    
+    def to_dict(self) -> dict:
+        return {
+            'fio': self.fio,
+            'birthdate': self.birthdate,
+            'group': self.group,
+            'gpa': self.gpa
+        }
+    
+    @classmethod
+    def from_dict(cls, data: dict):
+        return cls(
+            fio=data['fio'],
+            birthdate=data['birthdate'],
+            group=data['group'],
+            gpa=data['gpa']
+        )
+    
+    def __str__(self):
+        '''красивый вывод'''
+        return f'ФИО студента: {self.fio}\n Дата рождения: {self.birthdate}\n Возраст: {self.age()}\n Группа: {self.group}\n GPA: {self.gpa}'
+
+```
+![Картинка 1](./images/lab08/modelst.png)
+![Картинка 2](./images/lab08/modelsf.png)
+
+
+### Задание B
+```python
+
+import json
+from models import Student
+
+def students_to_json(students, path):
+    data = []
+    for elm in students:
+        data.append(elm.to_dict())
+
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(data, f, ensure_ascii=False, indent=2)
+
+def students_from_json(path):
+    with open(path, "r", encoding="utf-8") as f:
+        data = json.load(f)
+
+    result = []
+    for elm in data:
+        try:
+            student = Student.from_dict(elm)
+            result.append(student)
+        except ValueError:
+            continue
+
+    return result
+
+```
+![Картинка 1](./images/lab08/serialize.png)
+
+## Лабораторная работа 9
+### Задание A
+```python
+
+import csv
+import os
+from modelss import Student
+
+HEADERS = ['fio', 'birthdate', 'group', 'gpa']
+
+
+class Group:
+    def __init__(self, storage_path: str):
+        self.storage_path = storage_path
+        if not os.path.exists(self.storage_path):
+            self._ensure_storage_exists()
+
+    def _ensure_storage_exists(self):
+        '''создать файл с заголовком, если его ещё нет'''
+        with open(self.storage_path, 'w', newline='', encoding='utf-8') as file:
+            csv.writer(file).writerow(HEADERS)
+
+    def _read_all(self):
+        '''прочитать все строки из CSV'''
+        students = []
+        with open(self.storage_path, 'r', encoding='utf-8') as file:
+            reader = csv.DictReader(file)
+            for row in reader:
+                students.append(
+                    Student(fio=row["fio"], birthdate=row["birthdate"], group=row["group"], gpa=float(row["gpa"]), )
+                )
+        return students
+
+    def _write(self, students):
+        with open(self.storage_path, 'w', newline='', encoding='utf-8') as file:
+            writer = csv.writer(file)
+            writer.writerow(HEADERS)
+            for student in students:
+                writer.writerow([student.fio, student.birthdate, student.group, student.gpa])
+
+
+    def list(self):
+        '''вернуть всех студентов в виде списка Student'''
+        return self._read_all()
+
+    def add(self, student: Student):
+        '''добавить нового студента в CSV'''
+        students = self._read_all()
+
+        if any(student.fio == st.fio for st in students):
+            raise ValueError('Студент уже есть')
+
+        with open(self.storage_path, 'a', newline='', encoding='utf-8') as file:
+            csv.writer(file).writerow([student.fio, student.birthdate, student.group, student.gpa])
+
+    def find(self, substr: str):
+        '''найти студентов по подстроке в fio'''
+        students = self._read_all()
+        for student in students:
+            if substr.lower() in student.fio.lower():
+                return student
+            raise ValueError('Студента нет в базе')
+
+    def remove(self, fio: str):
+        '''удалить запись(и) с данным fio'''
+        students = self._read_all()
+        new_list_students = []
+        removed_count = 0
+
+        for st in students:
+            if st.fio.lower() != fio.lower():
+                new_list_students.append(st)
+            else:
+                removed_count += 1
+
+        if removed_count == 0:
+            raise ValueError(f'студента с ФИО: {fio} нет в базе')
+
+        self._write(new_list_students)
+
+    def update(self, fio, **fields):
+        '''обновить поля существующего студента'''
+        students = self._read_all()
+        update = False
+        for st in students:
+            if st.fio.lower() == fio.lower():
+                for key, value in fields.items():
+                    if 'fio' == key:
+                        st.fio = value
+                    if 'birthdate' == key:
+                        st.birthdate = value
+                    if 'group' == key:
+                        st.group = value
+                    if 'gpa' == key:
+                        st.gpa = float(value)
+                update = True
+                break
+        if update:
+            self._write(students)
+            return True
+
+        return False
+
+
+if __name__ == '__main__':
+    student = Group('C:/Users/79032/Desktop/PYTHON_LAB/python_labb/data/lab09/students.csv')
+    """print(student.update("Петров петр", group="BIVT-10"))#была бивт-05
+    print(student.remove("Сидорова Анна"))
+    print(student.find("Петров Петр"))
+    print(student.add(Student("Сидорова Анна", "2007-07-07", "BIVT-07", 4.3)))
+    print(student.list())
+    print(student)"""
+
+
+```
+# Создание файла
+![Картинка 1](./images/lab09/new.png)![Картинка 2](./images/lab09/new1.png)
+# Вывод студентов
+![Картинка 3](./images/lab09/list.png)
+# Добавление студента
+![Картинка 4](./images/lab09/newstudent.png)![Картинка 5](./images/lab09/newstudent1.png)
+# Поиск студента
+![Картинка 6](./images/lab09/find.png)
+# Удаление студента
+![Картинка 7](./images/lab09/remove.png)
+# Обновление информации студента
+![Картинка 8](./images/lab09/remove.png)
+
+
