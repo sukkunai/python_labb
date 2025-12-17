@@ -146,7 +146,7 @@ except IndexError as e:
     print(f'ошибка при dequeue из пустой очереди: {e}')
 
 ```
-![Картинка 1](./images/lab10/st.png)
+![Картинка 1](../../images/lab10/st.png)
 
 ### Задание B 
 ```python
