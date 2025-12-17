@@ -279,7 +279,7 @@ print(len(lst))
 print(lst.tail.value if lst.tail else None) 
 
 ```
-![Картинка 2](./images/lab10/ll.png)
+![Картинка 2](../../images/lab10/ll.png)
 
 
 ### Выводы по бенчмаркам
