@@ -1075,7 +1075,7 @@ class Queue:
         return self._data.popleft()
 
     def peek(self):
-        if not self.is_empty():
+        if self.is_empty():
             return None
         return self._data[0]
 
